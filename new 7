@@ -1,0 +1,853 @@
+#include"scanner.h"
+#include"lex.h"
+#include"recognizer.h"
+#include"doc.h"
+#include"dll.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+
+
+int findAttribute(attribute *item, char *str)
+{
+    while(item!= NULL)
+    {
+        if(strcmp(item->Name, str) == 0 )
+        {
+            return 1;
+        }
+        item = item->next;
+    }
+    return 0;
+}
+
+//flag = 0 ALL VERSION
+//flag = -1 LATEST VERSION
+//else Version Range
+
+// while(head!= NULL )
+//     {
+//         fprintf(fp, "DOC_ID: %d\tSYSTEM_ID: %d\tVn: %d\t", head->docId, head->sysId, head->versionNum);
+        
+//         displayAttribute(fp, head->attri);
+//         displayData(fp, head->version);
+
+//         head = head->next;
+//     }
+
+int countVersion(doc *ptr, char *str, int flag)
+{
+    int count = 0;
+ 
+    if(flag == 0)
+    {
+        while(ptr->next!= NULL)
+        {
+        ptr = ptr->next;
+        }
+        if (findAttribute(ptr->attri, str) == 1)
+        {
+           // fprintf(stdout, "THIS IS IT MATCH\n");
+            //fprintf(stdout, "%d", ptr->versionNum);
+            count++;
+        }
+            
+        return count;
+    }
+     else
+   {
+    while(ptr!= NULL)
+        {
+        if (findAttribute(ptr->attri, str) == 1)
+            {
+               // fprintf(stdout, "THIS IS IT MATCH\n");
+                count++;
+            }
+            
+        ptr = ptr->next;
+        }
+        return count;
+    }
+}
+
+
+//flag = 0 ALL VERSION
+//flag = -1 LATEST VERSION
+//else Version Range
+
+int countFunc(doc *ptr, char *str, int flag)
+{
+    int count = 0;
+    doc* cpt;
+   if(flag == 0 )
+   {
+    while(ptr!= NULL)
+        {
+        if (findAttribute(ptr->attri, str) == 1)
+            {
+                //fprintf(stdout, "THIS IS IT MATCH\n");
+                count++;
+            }
+                cpt = ptr->version;
+            while(cpt!= NULL)
+            {
+                   count = count + countVersion( cpt->version, str, flag);
+                    cpt= cpt->version;
+            }
+        ptr = ptr->next;
+        }
+        return count;
+    }
+
+    if(flag == -1)
+    {
+        while(ptr!= NULL)
+        {
+            if(ptr->version== NULL)
+            {
+                if (findAttribute(ptr->attri, str) == 1)
+                {
+                    //fprintf(stdout, "THIS IS IT MATCH\n");
+                    count++;
+                }
+            }
+            else
+            {
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    count = count + countVersion( cpt->version, str, flag);
+                        cpt= cpt->version;
+                }
+            }
+        ptr = ptr->next;
+        }
+        return count;
+    }
+    else
+    {
+        while(ptr!= NULL)
+        {
+            if(ptr->totalVersions <= flag)
+            {
+                if (findAttribute(ptr->attri, str) == 1)
+                {
+                    //fprintf(stdout, "THIS IS IT MATCH\n");
+                    count++;
+                }
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    count = count + countVersion( cpt->version, str, flag);
+                        cpt= cpt->version;
+                }
+            }
+            else
+            {
+                int x = ptr->totalVersions - flag;
+                 cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    if(cpt->version->versionNum > x)
+                    {
+                    count = count + countVersion( cpt->version, str, flag);
+                    }
+                   cpt= cpt->version;
+                }
+            }
+        ptr = ptr->next;
+        }
+        return count;
+    }
+}
+
+
+lexeme* evalCount(lexeme *tree, doc *head)
+{
+     
+    char* fieldname = tree->left->name;
+    int versions = -1;
+    if(tree->right!= NULL)
+    {
+        versions= tree->right->integerVal;
+    }
+
+    if(versions==-1)
+    {
+        
+        printf("\nCount of Latest Versions :%d\n", countFunc(head, fieldname,-1 ));
+    }
+   else
+   if(versions == 0)
+   printf("\n Count of all Versions  :%d\n", countFunc(head, fieldname, versions));
+   else
+   printf("\n Count of %d versions: %d\n", versions, countFunc(head, fieldname,versions ));
+
+   return tree;
+
+}
+
+dll* evaluateSort(char *name, doc* ptr, int flag)
+{
+  
+    doc* cpt;
+    
+    dll* list = newDLL();
+    if(flag == -1)
+    {
+
+        while(ptr!= NULL)
+            {
+                if(ptr->totalVersions == 1)
+                {
+                    if (findAttribute(ptr->attri, name) == 1)
+                    {
+                        insertDLL(list, sizeDLL(list), ptr);
+                    }
+                }
+                else
+                {
+                    cpt = ptr->version;
+                    while(cpt->version!= NULL)
+                    {
+                        cpt= cpt->version;
+                    }
+                    if (findAttribute(cpt->attri, name) == 1)
+                    {
+                        insertDLL(list, sizeDLL(list), cpt);
+                    }
+                        
+                }
+            
+            ptr = ptr->next;
+        }
+        return list;
+        
+    }
+    else
+    if(flag == 0)
+    {
+         while(ptr!= NULL)
+            {
+               
+                if (findAttribute(ptr->attri, name) == 1)
+                    {
+                        insertDLL(list,sizeDLL(list), ptr);
+                    }
+
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    if (findAttribute(cpt->attri, name) == 1)
+                    {
+                        insertDLL(list, sizeDLL(list), cpt);
+                    }
+                    cpt= cpt->version;
+                }
+            ptr = ptr->next;
+            }
+        return list;
+    }
+    else
+    {
+        
+            while(ptr!= NULL)
+            {
+                if(ptr->totalVersions <= flag)
+                {
+                   // printf("HERE\n");
+                    if (findAttribute(ptr->attri, name) == 1)
+                    {
+                        insertDLL(list,sizeDLL(list), ptr);
+                    }
+                    cpt = ptr->version;
+                     while(cpt!= NULL)
+                    {
+                    if (findAttribute(cpt->attri, name) == 1)
+                    {
+                        insertDLL(list, sizeDLL(list), cpt);
+                    }
+                        cpt= cpt->version;
+                    }
+                }
+                else
+                {
+                   // printf("HERE%d\n", flag);
+                    int x = ptr->totalVersions - flag;
+                    cpt = ptr->version;
+                    while(cpt!= NULL)
+                    {
+                        if(cpt->versionNum > x)
+                        {
+                            if (findAttribute(cpt->attri, name) == 1)
+                            {
+                             insertDLL(list, sizeDLL(list), cpt);
+                             }
+                        }
+                    cpt= cpt->version;
+                    }
+                }
+            ptr = ptr->next;
+            }
+        return list ;    
+    }
+}
+
+
+int returnAttributeVal(attribute *item, char *str)
+{
+    while(item!= NULL)
+    {
+        if(strcmp(item->Name, str) == 0 )
+        {
+            return item->value;
+        }
+        item = item->next;
+    }
+    return 0;
+}
+
+
+int comparison( doc* first, doc * second, char *s)
+{
+   if (returnAttributeVal(first->attri, s) < returnAttributeVal(second->attri, s))
+   {
+       return 1;
+    }
+    else
+    return 0;
+}
+
+void swap(dllnode *a, dllnode*b)
+{
+    doc* temp = a->value;
+    a->value= b->value;
+    b->value = temp;
+}
+dll* sorter( dll* list, char *s)
+{
+    if(sizeDLL(list) < 2 )
+    {
+        return list;
+    }
+    else
+    {
+        int swapped;
+       // dllnode *ptr1;
+        dllnode *lptr = NULL;
+        //dllnode *ptr;
+        dllnode *ptr1;
+        do
+        {
+            swapped = 0;
+            ptr1 = list->head;
+        
+        while(ptr1->next !=lptr)
+        {
+            
+            if(comparison(ptr1->value, ptr1->next->value, s)== 0)
+            {
+                swap(ptr1, ptr1->next);
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+            lptr = ptr1;
+        }
+        while(swapped);
+    }
+    return list;
+    }
+    
+
+
+lexeme *evalSort(lexeme* tree, doc* head)
+{
+    char *s = tree->left->name;
+    int versions = -1;
+    if(tree->right!= NULL)
+    {
+        versions= tree->right->integerVal;
+    }
+
+    dll* list = evaluateSort(s, head,  versions);
+    //displayDLL(stdout, list, NULL);
+
+    list = sorter(list, s);
+    printf("\nSORTED\n\n");
+    displayDLL(stdout, list, NULL);
+
+    return tree;
+}
+
+
+
+
+lexeme *eval(lexeme* tree);
+
+dll* evalCondition(lexeme* tree, int flag, dll* result, doc* head);
+int firstTime = 0;
+
+void projectionDisplay( lexeme *tree, dll* list)
+{
+    attribute *head = NULL ;
+   // attribute *ptr = NULL;
+    if(tree->left != NULL)
+    {
+        head = newAttribute(tree->left->name, 0);
+        //ptr = head;
+    
+    tree= tree->left;
+    while(tree->left!= NULL)
+    {
+        head = insertAttribute(head, newAttribute(tree->left->name, 0));
+        tree= tree->left;
+    }
+    }
+    displayDLL( stdout, list, head);
+}
+
+dll* makeDllNoCondition( doc* ptr, int flag)
+{
+    doc* cpt;
+    dll* list = newDLL();
+    if(flag == -1)
+    {
+        while(ptr!= NULL)
+            {
+                if(ptr->totalVersions == 1)
+                {
+                        insertDLL(list, 0, ptr); 
+                }
+                else
+                {
+                    cpt = ptr->version;
+                    while(cpt->version!= NULL)
+                    {
+                        cpt= cpt->version;
+                    }
+                    insertDLL(list, 0, cpt);   
+                }
+            
+            ptr = ptr->next;
+        }
+        return list;
+        
+    }
+    else
+    if(flag == 0)
+    {
+         while(ptr!= NULL)
+            { 
+                insertDLL(list, 0, ptr);
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    insertDLL(list, 0, cpt);
+                    cpt= cpt->version;
+                }
+            ptr = ptr->next;
+            }
+        return list;
+    }
+    else
+    {
+        while(ptr!= NULL)
+        {
+            if(ptr->totalVersions <= flag)
+            {
+                // printf("HERE\n");
+                insertDLL(list, 0, ptr);
+                cpt = ptr->version;
+                    while(cpt!= NULL)
+                {
+                    insertDLL(list, 0, cpt);
+                    cpt= cpt->version;
+                }
+            }
+            else
+            {
+                // printf("HERE%d\n", flag);
+                int x = ptr->totalVersions - flag;
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    if(cpt->versionNum > x)
+                    {
+                        insertDLL(list, 0, cpt);
+                    }
+                cpt= cpt->version;
+                }
+            }
+        ptr = ptr->next;
+        }
+    return list ;    
+    }
+}
+
+lexeme* evalQuery( lexeme* tree, doc *head)
+{
+    int versions = -1;
+    firstTime = 0;
+    dll *result = NULL;
+    if(tree->left != NULL)
+    {
+        if(tree->right->right!= NULL)
+        {
+                versions= tree->right->right->integerVal;
+               // printf("%d\n", versions);
+               result =  evalCondition(tree->left, versions, result, head);
+        }
+         else
+         result = evalCondition(tree->left, -1, result, head);
+            // 
+             projectionDisplay(tree->right, result);
+    }
+    else
+    {
+        if(tree->right->right!= NULL)
+        {
+                versions= tree->right->right->integerVal;
+               // printf("%d\n", versions);
+               result = makeDllNoCondition(head, versions );
+        }
+         else
+         result = makeDllNoCondition(head, versions );
+            // 
+             projectionDisplay(tree->right, result);
+            
+    }
+return tree;
+}
+
+
+int findValueOp(attribute *item, char *str, int value, types type)
+{
+    while(item!= NULL)
+    {
+        if(strcmp(item->Name, str) == 0 )
+        {
+            //printf("\n**********");
+            switch(type)
+            {
+                
+                case GREATERTHAN:
+                    if(item->value > value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                case EQUALS:
+                    if(item->value == value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                case LESSTHAN:
+                    if(item->value < value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                case NOT:
+                    if(item->value != value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                case GREATERTHANEQUAL:
+                    if(item->value >= value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                case LESSTHANEQUAL:
+                    if(item->value <= value)
+                    {
+                        return 1;
+                    }
+                    else
+                    return 0;
+                    default:
+                    return 0;
+            }
+            
+        }
+        item = item->next;
+    }
+    return 0;
+}
+
+
+
+
+dll* evaluateOperations(char *name, int value, doc* ptr, types type, int flag)
+{
+    
+    doc* cpt;
+    
+    dll* list = newDLL();
+    if(flag == -1)
+    {
+
+        while(ptr!= NULL)
+            {
+                if(ptr->totalVersions == 1)
+                {
+                    if (findValueOp(ptr->attri, name, value, type) == 1)
+                    {
+                        insertDLL(list, 0, ptr);
+                    }
+                }
+                else
+                {
+                    cpt = ptr->version;
+                    while(cpt->version!= NULL)
+                    {
+                        cpt= cpt->version;
+                    }
+                    if (findValueOp(cpt->attri, name, value, type) == 1)
+                        {
+                        
+                            insertDLL(list, 0, cpt);
+                        }
+                        
+                }
+            
+            ptr = ptr->next;
+        }
+        return list;
+        
+    }
+    else
+    if(flag == 0)
+    {
+         while(ptr!= NULL)
+            { 
+                if (findValueOp(ptr->attri, name, value, type) == 1)
+                {
+                    insertDLL(list, 0, ptr);
+                }
+
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    if (findValueOp(cpt->attri, name, value, type) == 1)
+                    {
+                        insertDLL(list, 0, cpt);
+                    }
+                    cpt= cpt->version;
+                }
+            ptr = ptr->next;
+            }
+        return list;
+    }
+    else
+    {
+        while(ptr!= NULL)
+        {
+            if(ptr->totalVersions <= flag)
+            {
+                // printf("HERE\n");
+                if (findValueOp(ptr->attri, name, value, type) == 1)
+                {
+                    insertDLL(list, 0, ptr);
+                }
+                cpt = ptr->version;
+                    while(cpt!= NULL)
+                {
+                if (findValueOp(cpt->attri, name, value, type) == 1)
+                    {
+                    
+                        insertDLL(list, 0, cpt);
+                    }
+                    cpt= cpt->version;
+                }
+            }
+            else
+            {
+                // printf("HERE%d\n", flag);
+                int x = ptr->totalVersions - flag;
+                cpt = ptr->version;
+                while(cpt!= NULL)
+                {
+                    if(cpt->versionNum > x)
+                    {
+                        if (findValueOp(cpt->attri, name, value, type) == 1)
+                        {
+                            insertDLL(list, 0, cpt);
+                        }
+                    }
+                cpt= cpt->version;
+                }
+            }
+        ptr = ptr->next;
+        }
+    return list ;    
+    }
+}
+
+
+
+dll* evaluateOperations2(char *name, int value, dll* ptr, types type)
+{
+    dll *list = newDLL();
+    dllnode *cpt = ptr->head;
+    while(cpt!= NULL)
+    {
+        if (findValueOp(cpt->value->attri, name, value, type) == 1)
+            {
+                insertDLL(list, list->size, cpt->value);
+            }
+            cpt= cpt->next;
+        }
+        return list;
+}
+
+
+
+dll* evalCondition(lexeme* tree, int flag, dll* resultList, doc*head)
+{
+    
+    char *field = tree->left->name;
+    int value = tree->right->left->integerVal;
+    
+    if( firstTime == 0)
+    {
+     firstTime = 1;
+     resultList = evaluateOperations(field, value, head, tree->right->type, flag);
+     //displayDLL(stdout,resultList, NULL);
+    }
+    else
+    {
+        resultList = evaluateOperations2(field, value, resultList, tree->right->type);
+    }
+    
+    if(tree->right->right != NULL)
+    {
+        resultList = evalCondition(tree->right->right, flag, resultList, head);
+       // displayDLL(stdout,resultList, NULL);
+    }
+
+   // doc* x =  resultList->head->value;
+   // displayAttribute(stdout, x->attri);    
+    return resultList;
+}
+
+int docId = 0;
+
+attribute* returnAttributeList(lexeme *tree)
+{
+    attribute* head1;
+     if(tree->right != NULL)
+        {
+            if(strcasecmp(tree->right->name, "DocID") == 0)
+                {
+                    docId = tree->right->left->integerVal ;
+                }
+        head1 = newAttribute(tree->right->name, tree->right->left->integerVal );
+        tree= tree->right;
+    while(tree->right!= NULL)
+        {
+            if(strcasecmp(tree->right->name, "DocID") == 0)
+                {
+                    docId = tree->right->left->integerVal ;
+                }
+        head1 = insertAttribute(head1, newAttribute(tree->right->name,tree->right->left->integerVal));
+        tree= tree->right;
+        }
+    }
+    return head1;
+}
+
+
+lexeme* evalInsert(lexeme *tree, doc* head)
+{
+    attribute* attributeList = returnAttributeList(tree);
+    doc* newDocument = newDoc();
+    doc* temp;
+    newDocument->docId = docId;
+   
+    newDocument->attri = insertAttribute(attributeList, newAttribute("sysId", newDocument->sysId  ));
+    newDocument->attri = insertAttribute(attributeList, newAttribute("vn", 1 ));
+    if(head == NULL)
+        {
+        head = newDocument;
+        }
+        else
+        {
+            temp = newDocument; 
+            if(versionChecker(head, temp) == 0)
+            {
+            head = insertdoc (head, temp);
+            }
+        }
+    displayData(stdout, head);
+    tree->head = head;
+    return tree;
+}
+
+
+lexeme *eval(lexeme* tree)
+{
+    doc* head = tree->head ;
+    switch(tree->type)
+    {
+        case NEXT:
+
+        while(tree->right != NULL)
+        {
+            tree->left->head = head;
+            head = eval(tree->left)->head;
+            tree->right->head = head;
+            tree= tree->right;
+        }
+        tree->left->head = head;
+        return eval(tree->left);
+
+        case COUNT:
+            return evalCount(tree, head);
+        
+        case INSERT:
+        
+             return evalInsert(tree, head);
+
+        case QUERY:
+            return evalQuery(tree, head);
+
+        case SORT:
+            return evalSort(tree, head);
+        default:     
+        return tree; 
+    }
+}
+
+
+
+
+
+int main (int argc, char** argv)
+{
+    if(argc == 0)
+    exit(1);
+    doc* head;
+     FILE *fp1 = fopen("input.txt","r");
+     head = readFile(fp1);
+     //displayData(stdout, head);
+    
+    FILE *fp = fopen("query.txt","r");
+    lexeme *tree = recognize(fp);
+    //printTree(stdout, tree->right, 2);
+
+    tree->right->head = head;
+    printTree(stdout, tree->right, 2);
+
+   eval(tree->right);
+    return 0;
+}

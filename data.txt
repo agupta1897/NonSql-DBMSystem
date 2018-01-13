@@ -1,0 +1,34 @@
+DocID:50 Spec1:61 Gender:2 Salary:68800
+Salary:66200 DocID:5 Spec1:96 Dept:5 State:40 City:2
+Salary:66200 DocID:5 Dept:6 State:40 City:2 
+Salary:84600 DocID:40 State:48 Spec1:46 Gender:2 Dept:4
+Dept:4 DocID:4 Salary:181800 Age:35
+DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1
+DocID:50 Spec1:61 Gender:2 Salary:72800
+Dept:4 Age:98 DocID:1
+DocID:30 City:2 Salary:96700 Dept:3
+DocID:30 City:3 Salary:96700 Dept:3
+DocID:30 City:4 Salary:96700 Dept:3
+State:10 Spec1:71 DocID:3
+Dept:4 DocID:4 Salary:181800 Age:36
+Dept:4 DocID:4 Salary:185800 Age:35
+DocID:70 Gender:2 Salary:148500 Dept:1
+Age:77 Gender:1 DocID:7 City:1
+Dept:5 State:44 DocID:80
+Gender:1 DocID:8 City:2
+Dept:4 DocID:4 Salary:181800 Age:36
+DocID:555 City:1 Age:76 Salary:170000
+Age:28 State:15 DocID:55 Spec1:76
+State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2
+DocID:66 Salary:130300 Spec1:41 Age:91
+DocID:780 Age:56
+DocID:555 Gender:2
+State:16 Spec1:26 Dept:3 DocID:78
+DocID:540 Gender:2 Salary:122000
+Salary:176600 Dept:1 DocID:54
+DocID:570 City:1 Age:34 Gender:2
+DocID:57 Dept:2
+Salary:47300 State:16 Gender:2 DocID:430
+DocID:43 Dept:4
+Salary:47300 State:16 Gender:2 DocID:430 Children:4
+Gender:2 Spec1:26 Age:78 DocID:620

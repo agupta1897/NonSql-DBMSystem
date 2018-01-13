@@ -1,0 +1,17 @@
+OBJD = doc.o scanner.o
+OOPTS = -Wall -std=c99 -Wextra -g -c
+LOPTS = -Wall -std=c99 -Wextra -g
+
+all :	final
+
+final :	$(OBJD)
+	gcc $(LOPTS) -o final $(OBJD)
+
+doc.o :	doc.c doc.h scanner.h
+	gcc $(OOPTS) doc.c
+
+scanner.o:	scanner.c scanner.h
+	gcc $(OOPTS) scanner.c
+
+clean :
+	rm -f $(OBJD) final *.o

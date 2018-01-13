@@ -1,0 +1,138 @@
+final.query([Dept=4], [sysid, DocID, Age])
+vn:1 sysid:33 DocID:43 
+vn:1 sysid:11 DocID:1 Age:98 
+vn:4 sysid:9 DocID:4 Age:36 
+vn:1 sysid:5 DocID:40 
+
+final.query([Dept=4], [sysid, DocID, Age], [2])
+vn:1 sysid:33 DocID:43 
+vn:1 sysid:11 DocID:1 Age:98 
+vn:4 sysid:9 DocID:4 Age:36 
+vn:3 sysid:8 DocID:4 Age:35 
+vn:1 sysid:5 DocID:40 
+
+final.query([Dept=4, Age>35], [DocID, Age])
+vn:1 DocID:620 Age:78 
+vn:1 DocID:43 
+vn:1 DocID:780 Age:56 
+vn:1 DocID:66 Age:91 
+vn:1 DocID:7 Age:77 
+vn:1 DocID:1 Age:98 
+vn:1 DocID:10 Age:54 
+vn:4 DocID:4 Age:36 
+vn:1 DocID:40 
+
+final.query([Dept=4, Age>35], [DocID, Age], [])
+vn:1 DocID:620 Age:78 
+vn:1 DocID:43 
+vn:1 DocID:780 Age:56 
+vn:1 DocID:66 Age:91 
+vn:1 DocID:555 Age:76 
+vn:1 DocID:7 Age:77 
+vn:1 DocID:1 Age:98 
+vn:1 DocID:10 Age:54 
+vn:4 DocID:4 Age:36 
+vn:2 DocID:4 Age:36 
+vn:1 DocID:40 
+
+final.query([age=35], [DocID])
+
+final.count([Dept], [])
+Count_Dept: 18
+
+final.count([Dept])
+Count_Dept: 12
+
+final.sort([Age])
+vn:1 sysid:22 Age:28 State:15 DocID:55 Spec1:76 
+vn:1 sysid:29 DocID:570 City:1 Age:34 Gender:2 
+vn:4 sysid:9 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:1 sysid:10 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+vn:1 sysid:25 DocID:780 Age:56 
+vn:1 sysid:17 Age:77 Gender:1 DocID:7 City:1 
+vn:1 sysid:34 Gender:2 Spec1:26 Age:78 DocID:620 
+vn:1 sysid:24 DocID:66 Salary:130300 Spec1:41 Age:91 
+vn:1 sysid:23 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2 
+vn:1 sysid:11 Dept:4 Age:98 DocID:1 
+
+final.sort([Age], [3])
+vn:1 sysid:22 Age:28 State:15 DocID:55 Spec1:76 
+vn:1 sysid:29 DocID:570 City:1 Age:34 Gender:2 
+vn:3 sysid:8 Dept:4 DocID:4 Salary:185800 Age:35 
+vn:4 sysid:9 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:2 sysid:7 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:1 sysid:10 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+vn:1 sysid:25 DocID:780 Age:56 
+vn:1 sysid:20 DocID:555 City:1 Age:76 Salary:170000 
+vn:1 sysid:17 Age:77 Gender:1 DocID:7 City:1 
+vn:1 sysid:34 Gender:2 Spec1:26 Age:78 DocID:620 
+vn:1 sysid:24 DocID:66 Salary:130300 Spec1:41 Age:91 
+vn:1 sysid:23 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2 
+vn:1 sysid:11 Dept:4 Age:98 DocID:1 
+
+final.query([], [sysid, Gender, Salary, City])
+vn:1 sysid:34 Gender:2 
+vn:1 sysid:33 
+vn:2 sysid:32 Gender:2 Salary:47300 
+vn:1 sysid:30 
+vn:1 sysid:29 Gender:2 City:1 
+vn:1 sysid:28 Salary:176600 
+vn:1 sysid:27 Gender:2 Salary:122000 
+vn:1 sysid:26 
+vn:1 sysid:25 
+vn:1 sysid:24 Salary:130300 
+vn:1 sysid:23 Gender:2 Salary:181800 City:2 
+vn:1 sysid:22 
+vn:2 sysid:21 Gender:2 
+vn:1 sysid:19 Gender:1 City:2 
+vn:1 sysid:18 
+vn:1 sysid:17 Gender:1 City:1 
+vn:1 sysid:16 Gender:2 Salary:148500 
+vn:1 sysid:15 
+vn:3 sysid:14 Salary:96700 City:4 
+vn:1 sysid:11 
+vn:1 sysid:10 Gender:1 Salary:56300 City:1 
+vn:4 sysid:9 Salary:181800 
+vn:1 sysid:5 Gender:2 Salary:84600 
+vn:2 sysid:4 Salary:66200 City:2 
+vn:2 sysid:2 Gender:2 Salary:72800 
+
+final.query([], [], [])
+vn:1 sysid:34 Gender:2 Spec1:26 Age:78 DocID:620 
+vn:1 sysid:33 DocID:43 Dept:4 
+vn:2 sysid:32 Salary:47300 State:16 Gender:2 DocID:430 Children:4 
+vn:1 sysid:31 Salary:47300 State:16 Gender:2 DocID:430 
+vn:1 sysid:30 DocID:57 Dept:2 
+vn:1 sysid:29 DocID:570 City:1 Age:34 Gender:2 
+vn:1 sysid:28 Salary:176600 Dept:1 DocID:54 
+vn:1 sysid:27 DocID:540 Gender:2 Salary:122000 
+vn:1 sysid:26 State:16 Spec1:26 Dept:3 DocID:78 
+vn:1 sysid:25 DocID:780 Age:56 
+vn:1 sysid:24 DocID:66 Salary:130300 Spec1:41 Age:91 
+vn:1 sysid:23 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2 
+vn:1 sysid:22 Age:28 State:15 DocID:55 Spec1:76 
+vn:2 sysid:21 DocID:555 Gender:2 
+vn:1 sysid:20 DocID:555 City:1 Age:76 Salary:170000 
+vn:1 sysid:19 Gender:1 DocID:8 City:2 
+vn:1 sysid:18 Dept:5 State:44 DocID:80 
+vn:1 sysid:17 Age:77 Gender:1 DocID:7 City:1 
+vn:1 sysid:16 DocID:70 Gender:2 Salary:148500 Dept:1 
+vn:1 sysid:15 State:10 Spec1:71 DocID:3 
+vn:3 sysid:14 DocID:30 City:4 Salary:96700 Dept:3 
+vn:2 sysid:13 DocID:30 City:3 Salary:96700 Dept:3 
+vn:1 sysid:12 DocID:30 City:2 Salary:96700 Dept:3 
+vn:1 sysid:11 Dept:4 Age:98 DocID:1 
+vn:1 sysid:10 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+vn:4 sysid:9 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:3 sysid:8 Dept:4 DocID:4 Salary:185800 Age:35 
+vn:2 sysid:7 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:1 sysid:6 Dept:4 DocID:4 Salary:181800 Age:35 
+vn:1 sysid:5 Salary:84600 DocID:40 State:48 Spec1:46 Gender:2 Dept:4 
+vn:2 sysid:4 Salary:66200 DocID:5 Dept:6 State:40 City:2 
+vn:1 sysid:3 Salary:66200 DocID:5 Spec1:96 Dept:5 State:40 City:2 
+vn:2 sysid:2 DocID:50 Spec1:61 Gender:2 Salary:72800 
+vn:1 sysid:1 DocID:50 Spec1:61 Gender:2 Salary:68800 
+
+final.count([Age])
+Count_Age: 10
+
